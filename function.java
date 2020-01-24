@@ -20,6 +20,7 @@ public class function {
 			stmt.setString(4,email);
 			stmt.setString(5,phone);
 			stmt.executeUpdate();
+			
 			return;
 		}catch(Exception e) {
 			e.printStackTrace();
