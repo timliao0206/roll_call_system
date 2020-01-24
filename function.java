@@ -19,6 +19,7 @@ public class function {
 			stmt.setString(3,password);
 			stmt.setString(4,email);
 			stmt.setString(5,phone);
+			
 			stmt.executeUpdate();
 			
 			return;
