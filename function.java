@@ -5,6 +5,8 @@ import java.util.*;
 import java.text.*;
 import java.time.LocalDateTime;
 import java.time.format.*;
+import java.text.DateFormat;
+import java.util.Date;
 
 public class function {
 	
@@ -247,6 +249,105 @@ public class function {
 			stmt.executeUpdate(sql);
 			stmt.close();
 			return;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	//get student ID by user name , return the id or -1 if there is a bug
+	public static int getStudentId(String username,Connection con) {
+		try {
+			//do select
+			String sql="select StudentId from student where StudentUserName = ?";
+			PreparedStatement stmt=con.prepareStatement(sql);
+			stmt.setString(1, username);
+			ResultSet rs=stmt.executeQuery();
+			
+			//check if the number of selected data = 1
+			int size=0;
+			if(rs != null) {
+				rs.last();
+				size = rs.getRow();
+			}
+			if(size != 1) {
+				return -1;
+			}
+			return rs.getInt(1);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	//get teacher id by user name , return the id or -1 if there is a bug
+	public static int getTeacherId(String username , Connection con){
+		try {
+			//do select
+			String sql="select TeacherId from teacher where TeacherUserName = ?";
+			PreparedStatement stmt=con.prepareStatement(sql);
+			stmt.setString(1, username);
+			ResultSet rs=stmt.executeQuery();
+			
+			//check if the number of selected data = 1
+			int size=0;
+			if(rs != null) {
+				rs.last();
+				size = rs.getRow();
+			}
+			if(size != 1) {
+				return -1;
+			}
+			return rs.getInt(1);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	//get class id by name , return the id or -1 if there is a bug
+	public static int getClassId(String name , Connection con){
+		try {
+			//do select
+			String sql="select ClassId from class where  ClassName = ?";
+			PreparedStatement stmt=con.prepareStatement(sql);
+			stmt.setString(1, name);
+			ResultSet rs=stmt.executeQuery();
+			
+			//check if the number of selected data = 1
+			int size=0;
+			if(rs != null) {
+				rs.last();
+				size = rs.getRow();
+			}
+			if(size != 1) {
+				return -1;
+			}
+			return rs.getInt(1);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	//make a student join a class
+	//after I separate them into different class(in java) , the name would be turned into joinClass
+	public static void StudentjoinClass(int studentid , int classid , Connection con) {
+		try {
+			//id not existed should be handled
+			//insert into studentinclass
+			addStudentinClass(studentid , classid , con);
+			
+			//add Attendance
+			Date dnow = new Date();
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			String sql="select ClassTimeId from classtime where ClassTimeRefClassId = ? AND Time > ?";
+			PreparedStatement stmt=con.prepareStatement(sql);
+			stmt.setInt(1, classid);
+			stmt.setString(2, formatter.format(dnow));
+			ResultSet rs = stmt.executeQuery();
+			while(rs.next()) {
+				addAttendance(studentid,rs.getInt(rs.getRow()),con);
+			}
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
