@@ -333,7 +333,12 @@ public class function {
 	//after I separate them into different class(in java) , the name would be turned into joinClass
 	public static void StudentjoinClass(int studentid , int classid , Connection con) {
 		try {
-			//id not existed should be handled
+			
+			if(!(isValidStudentId(studentid,con)&&isValidClassId(classid,con))) {
+				System.out.println("invalid studentid or classid in StudentjoinClass.");
+				return;
+			}
+			
 			//insert into studentinclass
 			addStudentinClass(studentid , classid , con);
 			
@@ -348,10 +353,11 @@ public class function {
 			while(rs.next()) {
 				addAttendance(studentid,rs.getInt(rs.getRow()),con);
 			}
+			
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}	
 	
 	public static void main(String args[]) {
 		try {
@@ -404,4 +410,46 @@ public class function {
 			return false;
 		}
 	}
+	
+	//check if studentid is valid
+	private static boolean isValidStudentId(int studentid , Connection con) {
+		try {
+			String sql = "select StudentId from student where StudentId = ?";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, studentid);
+			ResultSet rs = stmt.executeQuery();
+			return rs!=null;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	//check if teacherid is valid
+	private static boolean isValidTeacherId(int teacherid , Connection con) {
+		try {
+			String sql = "select TeacherId from teacher where TeacherId = ?";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, teacherid);
+			ResultSet rs = stmt.executeQuery();
+			return rs!=null;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	//check if classid is valid
+	private static boolean isValidClassId(int classid , Connection con) {
+		try {
+			String sql = "select ClassId from class where ClassId = ?";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, classid);
+			ResultSet rs = stmt.executeQuery();
+			return rs!=null;
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}	
 }
