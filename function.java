@@ -400,7 +400,7 @@ public class function {
 	}
 	
 	//check if the date is valid format 
-	private static boolean isValidDateTime(String time) {
+	public static boolean isValidDateTime(String time) {
 		try {
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			df.setLenient(false);
@@ -412,7 +412,7 @@ public class function {
 	}
 	
 	//check if studentid is valid
-	private static boolean isValidStudentId(int studentid , Connection con) {
+	public static boolean isValidStudentId(int studentid , Connection con) {
 		try {
 			String sql = "select StudentId from student where StudentId = ?";
 			PreparedStatement stmt = con.prepareStatement(sql);
@@ -426,7 +426,7 @@ public class function {
 	}
 	
 	//check if teacherid is valid
-	private static boolean isValidTeacherId(int teacherid , Connection con) {
+	public static boolean isValidTeacherId(int teacherid , Connection con) {
 		try {
 			String sql = "select TeacherId from teacher where TeacherId = ?";
 			PreparedStatement stmt = con.prepareStatement(sql);
@@ -440,7 +440,7 @@ public class function {
 	}
 	
 	//check if classid is valid
-	private static boolean isValidClassId(int classid , Connection con) {
+	public static boolean isValidClassId(int classid , Connection con) {
 		try {
 			String sql = "select ClassId from class where ClassId = ?";
 			PreparedStatement stmt = con.prepareStatement(sql);
