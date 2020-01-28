@@ -14,9 +14,27 @@ public class Student{
 	private String Email="";
 	private String PhoneNumber="";
 	
+	public Student(String username , String name , String password , String email , String phone) {
+		UserName = username;
+		Name = name;
+		Password = password;
+		Email = email;
+		PhoneNumber = phone;
+		return;
+	}
 	
 	public void addStudent(Connection con) {
 		try {
+			//detect duplicate
+			String sqltest="select StudentId from student where StudentUserName = ?";
+			PreparedStatement stmt2=con.prepareStatement(sqltest);
+			stmt2.setString(1, UserName);
+			ResultSet rs=stmt2.executeQuery();
+			if(rs!=null) { 
+				function.BugDetector(1);
+				return;
+			}
+			
 			String sql="insert into student (StudentName , StudentUserName , StudentPassword , StudentEmail , StudentPhoneNumber) "
 				+ "values ( ? , ? , ? , ? , ? )";
 			PreparedStatement stmt = con.prepareStatement(sql);
@@ -34,7 +52,7 @@ public class Student{
 		}
 	}
 	
-	public int getStudentId(Connection con) {
+	public int getId(Connection con) {
 		try {
 			//do select
 			String sql="select StudentId from student where StudentUserName = ?";
@@ -61,7 +79,8 @@ public class Student{
 	
 	public void joinClass(int classid , Connection con) {
 		try {
-				
+			if(Id==-1) getId(con);
+			
 			if(!(function.isValidStudentId(Id,con)&&function.isValidClassId(classid,con))) {
 				System.out.println("invalid studentid or classid in joinClass.");
 				return;

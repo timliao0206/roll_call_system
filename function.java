@@ -10,6 +10,19 @@ import java.util.Date;
 
 public class function {
 	
+	//catch bug
+	public static void BugDetector(int situation) {
+		switch(situation) {
+		case 1:
+			System.out.println("duplicated StudentUserName in table \"student\"\n");
+			break;
+		case 2:
+			System.out.println("duplicated TeacherUserName in table \"teacher\"\n");
+			break;
+		}
+		return;
+	}
+	
 	//add a row into student
 	public static void addStudent(String name , String username , String password ,String email,String phone, Connection con) {
 		try {
