@@ -120,11 +120,10 @@ public class function {
 	public static void addAttendance(int studentid , int classtimeid , Connection con) {
 		try {
 			String sql="insert into attendance (AttendanceRefStudentId , AttendanceRefClassTimeId)"
-					+ " values (?,?) ON DUPLICATE UPDATE AttendanceRefStudentId = ?";
+					+ " values (?,?) ON DUPLICATE KEY UPDATE Attendance = 0";
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setInt(1, studentid);
 			stmt.setInt(2, classtimeid);
-			stmt.setInt(3, studentid);
 			stmt.executeUpdate();
 			stmt.close();
 		}catch(Exception e) {
@@ -134,8 +133,8 @@ public class function {
 	
 	public static void addAttendance(int studentid , int classtimeid , int attendance , Connection con) {
 		try {
-			String sql="insert into attendance (AttendanceRefStudentId , AttendanceRefClassTimeId)"
-					+ " values (?,?,?) ON DUPLICATE UPDATE Attendance = ?";
+			String sql="insert into attendance (AttendanceRefStudentId , AttendanceRefClassTimeId , Attendance)"
+					+ " values (?,?,?) ON DUPLICATE KEY UPDATE Attendance = ?";
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setInt(1, studentid);
 			stmt.setInt(2, classtimeid);
@@ -351,7 +350,7 @@ public class function {
 			stmt.setString(2, formatter.format(dnow));
 			ResultSet rs = stmt.executeQuery();
 			while(rs.next()) {
-				addAttendance(studentid,rs.getInt(rs.getRow()),con);
+				addAttendance(studentid,rs.getInt(1),0,con);
 			}
 			
 		}catch(Exception e) {
@@ -363,13 +362,13 @@ public class function {
 		try {
 			// create connection
 			String conurl="jdbc:mysql://127.0.0.1:3306/roll_call_system_database";
-			Class.forName("java.sql.Driver");
+			java.lang.Class.forName("java.sql.Driver");
 			Connection con= DriverManager.getConnection(conurl,"root","hill1017");
 			
 			//clear ALL
-			//clearStudent(con);
-			//clearTeacher(con);
-			//clearClass(con);
+			clearStudent(con);
+			clearTeacher(con);
+			clearClass(con);
 			//clearClassTime(con);
 			
 			//add student 
@@ -382,14 +381,36 @@ public class function {
 			addClass("Chinese 101" , "We will introduce proses of the ancients" , 100 , con);
 			
 			//add classtime
-			addClassTime( 34 , "2021-02-06 18:00:00",con);
+			//addClassTime( 34 , "2021-02-06 18:00:00",con);
 			
 			//add studentinclass
-			addStudentinClass(36,35,con);
+			//addStudentinClass(36,35,con);
 			
 			//add teacherinclass
-			addTeacherinClass(40,36,con);
+			//addTeacherinClass(40,36,con);
 			
+			//get id
+			int std_id = getStudentId("bob0102",con);
+			int teacher_id=getTeacherId("GodHimself",con);
+			int class_id=getClassId("Chinese 101",con);
+			
+			Calendar now = Calendar.getInstance();
+			now.add(Calendar.DAY_OF_YEAR,365);
+			
+			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			
+			addClassTime(class_id,formatter.format(now.getTime()),con);
+			
+			now.add(Calendar.DAY_OF_YEAR,365);
+			
+			addClassTime(class_id,formatter.format(now.getTime()),con);
+			
+			now.add(Calendar.DAY_OF_YEAR,-5*365);
+			
+			addClassTime(class_id,formatter.format(now.getTime()),con);
+			
+			
+			StudentjoinClass(std_id,class_id,con);
 			// end connection
 			con.close();
 			
