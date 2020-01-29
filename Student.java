@@ -30,7 +30,7 @@ public class Student{
 			PreparedStatement stmt2=con.prepareStatement(sqltest);
 			stmt2.setString(1, UserName);
 			ResultSet rs=stmt2.executeQuery();
-			if(rs!=null) { 
+			if(rs.next()) { 
 				function.BugDetector(1);
 				return;
 			}
@@ -53,6 +53,11 @@ public class Student{
 	}
 	
 	public int getId(Connection con) {
+		
+		if(Id!=-1) {
+			return Id;
+		}
+		
 		try {
 			//do select
 			String sql="select StudentId from student where StudentUserName = ?";
@@ -81,8 +86,8 @@ public class Student{
 		try {
 			if(Id==-1) getId(con);
 			
-			if(!(function.isValidStudentId(Id,con)&&function.isValidClassId(classid,con))) {
-				System.out.println("invalid studentid or classid in joinClass.");
+			if(!function.isValidClassId(classid,con)) {
+				function.BugDetector(6);
 				return;
 			}
 			
@@ -105,4 +110,29 @@ public class Student{
 			e.printStackTrace();
 		}
 	}
+	
+	public static int getIdbyUserName(String username , Connection con) {
+		try {
+			//do select
+			String sql="select StudentId from student where StudentUserName = ?";
+			PreparedStatement stmt=con.prepareStatement(sql);
+			stmt.setString(1, username);
+			ResultSet rs=stmt.executeQuery();
+			
+			//check if the number of selected data = 1
+			int size=0;
+			if(rs != null) {
+				rs.last();
+				size = rs.getRow();
+			}
+			if(size != 1) {
+				return -1;
+			}
+			return rs.getInt(1);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
 }

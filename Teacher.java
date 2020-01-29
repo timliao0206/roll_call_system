@@ -13,12 +13,13 @@ public class Teacher {
 	private String PhoneNumber="";
 	private String Major="";
 	
-	public Teacher(String username , String name , String password , String email , String phone) {
+	public Teacher(String username , String name , String password , String email , String phone , String major) {
 		UserName = username;
 		Name = name;
 		Password = password;
 		Email = email;
 		PhoneNumber = phone;
+		Major=major;
 		return;
 	}
 	
@@ -29,7 +30,7 @@ public class Teacher {
 			PreparedStatement stmt2=con.prepareStatement(sqltest);
 			stmt2.setString(1, UserName);
 			ResultSet rs=stmt2.executeQuery();
-			if(rs!=null) { 
+			if(rs.next()) { 
 				function.BugDetector(2);
 				return;
 			}
@@ -54,6 +55,11 @@ public class Teacher {
 	}
 	
 	public int getId(Connection con) {
+		
+		if(Id!=-1) {
+			return Id;
+		}
+		
 		try {
 			//do select
 			String sql="select TeacherId from teacher where TeacherUserName = ?";
@@ -78,5 +84,39 @@ public class Teacher {
 		}
 	}
 	
+	public void joinClass(int classid,Connection con) {
+		
+		if(Id==-1) getId(con);
+		
+		if(!function.isValidClassId(classid, con)) {
+			function.BugDetector(6);
+		}
+		
+		function.addTeacherinClass(Id, classid, con);
+		return;
+	}
 	
+	public static int getIdbyUserName(String username , Connection con) {
+		try {
+			//do select
+			String sql="select TeacherId from teacher where TeacherUserName = ?";
+			PreparedStatement stmt=con.prepareStatement(sql);
+			stmt.setString(1, username);
+			ResultSet rs=stmt.executeQuery();
+			
+			//check if the number of selected data = 1
+			int size=0;
+			if(rs != null) {
+				rs.last();
+				size = rs.getRow();
+			}
+			if(size != 1) {
+				return -1;
+			}
+			return rs.getInt(1);
+		}catch(Exception e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
 }

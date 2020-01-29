@@ -19,64 +19,13 @@ public class function {
 		case 2:
 			System.out.println("duplicated TeacherUserName in table \"teacher\"\n");
 			break;
+		case 3:
+			System.out.println("duplicated ClassName in table \"class\"");
+		case 6:
+			System.out.println("invalid class id");
+			break;
 		}
 		return;
-	}
-	
-	//add a row into student
-	public static void addStudent(String name , String username , String password ,String email,String phone, Connection con) {
-		try {
-			String sql="insert into student (StudentName , StudentUserName , StudentPassword , StudentEmail , StudentPhoneNumber) "
-				+ "values ( ? , ? , ? , ? , ? )";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setString(1,name);
-			stmt.setString(2,username);
-			stmt.setString(3,password);
-			stmt.setString(4,email);
-			stmt.setString(5,phone);
-			
-			stmt.executeUpdate();
-			
-			return;
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	//add a row into class
-	public static void addClass(String name , String description , int credit , Connection con) {
-		try {
-			String sql="insert into class (ClassName , ClassDescription , ClassCredit) "
-				+ "values (?,?,?)";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setString(1,name);
-			stmt.setString(2,description);
-			stmt.setInt(3,credit);
-			stmt.executeUpdate();
-			return;
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-	}
-	
-	//add a row into teacher
-	public static void addTeacher(String name ,String major, String username , String password ,String email,String phone, Connection con) {
-		try {
-			String sql="insert into teacher (TeacherName , TeacherMajor , TeacherUserName , TeacherPassword , TeacherEmail , TeacherPhoneNumber) "
-				+ "values (?,?,?,?,?,?)";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setString(1,name);
-			stmt.setString(2, major);
-			stmt.setString(3,username);
-			stmt.setString(4,password);
-			stmt.setString(5,email);
-			stmt.setString(6,phone);
-			stmt.executeUpdate();
-			stmt.close();
-			return;
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 	//add a class time
@@ -266,110 +215,7 @@ public class function {
 		}
 	}
 	
-	//get student ID by user name , return the id or -1 if there is a bug
-	public static int getStudentId(String username,Connection con) {
-		try {
-			//do select
-			String sql="select StudentId from student where StudentUserName = ?";
-			PreparedStatement stmt=con.prepareStatement(sql);
-			stmt.setString(1, username);
-			ResultSet rs=stmt.executeQuery();
-			
-			//check if the number of selected data = 1
-			int size=0;
-			if(rs != null) {
-				rs.last();
-				size = rs.getRow();
-			}
-			if(size != 1) {
-				return -1;
-			}
-			return rs.getInt(1);
-		}catch(Exception e) {
-			e.printStackTrace();
-			return -1;
-		}
-	}
-	
-	//get teacher id by user name , return the id or -1 if there is a bug
-	public static int getTeacherId(String username , Connection con){
-		try {
-			//do select
-			String sql="select TeacherId from teacher where TeacherUserName = ?";
-			PreparedStatement stmt=con.prepareStatement(sql);
-			stmt.setString(1, username);
-			ResultSet rs=stmt.executeQuery();
-			
-			//check if the number of selected data = 1
-			int size=0;
-			if(rs != null) {
-				rs.last();
-				size = rs.getRow();
-			}
-			if(size != 1) {
-				return -1;
-			}
-			return rs.getInt(1);
-		}catch(Exception e) {
-			e.printStackTrace();
-			return -1;
-		}
-	}
-	
-	//get class id by name , return the id or -1 if there is a bug
-	public static int getClassId(String name , Connection con){
-		try {
-			//do select
-			String sql="select ClassId from class where  ClassName = ?";
-			PreparedStatement stmt=con.prepareStatement(sql);
-			stmt.setString(1, name);
-			ResultSet rs=stmt.executeQuery();
-			
-			//check if the number of selected data = 1
-			int size=0;
-			if(rs != null) {
-				rs.last();
-				size = rs.getRow();
-			}
-			if(size != 1) {
-				return -1;
-			}
-			return rs.getInt(1);
-		}catch(Exception e) {
-			e.printStackTrace();
-			return -1;
-		}
-	}
-	
-	//make a student join a class
-	//after I separate them into different class(in java) , the name would be turned into joinClass
-	public static void StudentjoinClass(int studentid , int classid , Connection con) {
-		try {
-			
-			if(!(isValidStudentId(studentid,con)&&isValidClassId(classid,con))) {
-				System.out.println("invalid studentid or classid in StudentjoinClass.");
-				return;
-			}
-			
-			//insert into studentinclass
-			addStudentinClass(studentid , classid , con);
-			
-			//add Attendance
-			Date dnow = new Date();
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			String sql="select ClassTimeId from classtime where ClassTimeRefClassId = ? AND Time > ?";
-			PreparedStatement stmt=con.prepareStatement(sql);
-			stmt.setInt(1, classid);
-			stmt.setString(2, formatter.format(dnow));
-			ResultSet rs = stmt.executeQuery();
-			while(rs.next()) {
-				addAttendance(studentid,rs.getInt(1),0,con);
-			}
-			
-		}catch(Exception e) {
-			e.printStackTrace();
-		}
-	}	
+		
 	
 	public static void main(String args[]) {
 		try {
@@ -384,46 +230,33 @@ public class function {
 			clearClass(con);
 			//clearClassTime(con);
 			
-			//add student 
-			addStudent("JonCina", "bob0102" , "iampassword" , "bob0102@sudo.com" , "0912345678" , con);
+			Student bob=new Student("bob0231","bob","bobnumberone","bob@bob.bob.com","0908080808");
+			Teacher t= new Teacher("teacher01","teacher","password","email@email.com","0922222222","major");
+			Class c = new Class("class","hardcore",30);
 			
-			//add teacher
-			addTeacher("Jesus" , "ALMIGHTY" , "GodHimself" , "HoWDarEYouHaCKGod" , "jesus@cloud.com" , "0142424242" , con);
+			bob.addStudent(con);
+			t.addTeacher(con);
+			c.addClass(con);
 			
-			//add class
-			addClass("Chinese 101" , "We will introduce proses of the ancients" , 100 , con);
+			bob.getId(con);
+			t.getId(con);
+			c.getId(con);
 			
-			//add classtime
-			//addClassTime( 34 , "2021-02-06 18:00:00",con);
+			if(bob.getId(con)==Student.getIdbyUserName("bob0231", con)) {
+				System.out.println("pass 1\n");
+			}
 			
-			//add studentinclass
-			//addStudentinClass(36,35,con);
+			if(t.getId(con)==Teacher.getIdbyUserName("teacher01", con)) {
+				System.out.println("pass 2\n");
+			}
 			
-			//add teacherinclass
-			//addTeacherinClass(40,36,con);
+			if(c.getId(con)==Class.getIdbyName("class", con)) {
+				System.out.println("pass 3\n");
+			}
 			
-			//get id
-			int std_id = getStudentId("bob0102",con);
-			int teacher_id=getTeacherId("GodHimself",con);
-			int class_id=getClassId("Chinese 101",con);
+			bob.joinClass(c.getId(con), con);
+			t.joinClass(c.getId(con), con);
 			
-			Calendar now = Calendar.getInstance();
-			now.add(Calendar.DAY_OF_YEAR,365);
-			
-			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-			
-			addClassTime(class_id,formatter.format(now.getTime()),con);
-			
-			now.add(Calendar.DAY_OF_YEAR,365);
-			
-			addClassTime(class_id,formatter.format(now.getTime()),con);
-			
-			now.add(Calendar.DAY_OF_YEAR,-5*365);
-			
-			addClassTime(class_id,formatter.format(now.getTime()),con);
-			
-			
-			StudentjoinClass(std_id,class_id,con);
 			// end connection
 			con.close();
 			
@@ -452,7 +285,7 @@ public class function {
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setInt(1, studentid);
 			ResultSet rs = stmt.executeQuery();
-			return rs!=null;
+			return rs.next();
 		}catch(Exception e) {
 			e.printStackTrace();
 			return false;
@@ -466,7 +299,7 @@ public class function {
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setInt(1, teacherid);
 			ResultSet rs = stmt.executeQuery();
-			return rs!=null;
+			return rs.next();
 		}catch(Exception e) {
 			e.printStackTrace();
 			return false;
@@ -480,7 +313,7 @@ public class function {
 			PreparedStatement stmt = con.prepareStatement(sql);
 			stmt.setInt(1, classid);
 			ResultSet rs = stmt.executeQuery();
-			return rs!=null;
+			return rs.next();
 		}catch(Exception e) {
 			e.printStackTrace();
 			return false;
