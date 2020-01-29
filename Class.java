@@ -95,4 +95,17 @@ public class Class{
 			return -1;
 		}
 	}
+	
+	public static boolean isValidId(int classid , Connection con) {
+		try {
+			String sql = "select ClassId from class where ClassId = ?";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, classid);
+			ResultSet rs = stmt.executeQuery();
+			return rs.next();
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}	
 }

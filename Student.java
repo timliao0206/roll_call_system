@@ -86,7 +86,7 @@ public class Student{
 		try {
 			if(Id==-1) getId(con);
 			
-			if(!function.isValidClassId(classid,con)) {
+			if(!Class.isValidId(classid,con)) {
 				function.BugDetector(6);
 				return;
 			}
@@ -134,5 +134,18 @@ public class Student{
 			return -1;
 		}
 	}
+	
+	public static boolean isValidId(int studentid , Connection con) {
+		try {
+			String sql = "select StudentId from student where StudentId = ?";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, studentid);
+			ResultSet rs = stmt.executeQuery();
+			return rs.next();
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}	
 	
 }

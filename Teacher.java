@@ -88,7 +88,7 @@ public class Teacher {
 		
 		if(Id==-1) getId(con);
 		
-		if(!function.isValidClassId(classid, con)) {
+		if(!Class.isValidId(classid, con)) {
 			function.BugDetector(6);
 		}
 		
@@ -119,4 +119,17 @@ public class Teacher {
 			return -1;
 		}
 	}
+	
+	public static boolean isValidId(int teacherid , Connection con) {
+		try {
+			String sql = "select TeacherId from teacher where TeacherId = ?";
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setInt(1, teacherid);
+			ResultSet rs = stmt.executeQuery();
+			return rs.next();
+		}catch(Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}	
 }

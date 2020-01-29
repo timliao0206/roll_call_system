@@ -278,45 +278,4 @@ public class function {
 		}
 	}
 	
-	//check if studentid is valid
-	public static boolean isValidStudentId(int studentid , Connection con) {
-		try {
-			String sql = "select StudentId from student where StudentId = ?";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setInt(1, studentid);
-			ResultSet rs = stmt.executeQuery();
-			return rs.next();
-		}catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	//check if teacherid is valid
-	public static boolean isValidTeacherId(int teacherid , Connection con) {
-		try {
-			String sql = "select TeacherId from teacher where TeacherId = ?";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setInt(1, teacherid);
-			ResultSet rs = stmt.executeQuery();
-			return rs.next();
-		}catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}
-	
-	//check if classid is valid
-	public static boolean isValidClassId(int classid , Connection con) {
-		try {
-			String sql = "select ClassId from class where ClassId = ?";
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setInt(1, classid);
-			ResultSet rs = stmt.executeQuery();
-			return rs.next();
-		}catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		}
-	}	
 }
